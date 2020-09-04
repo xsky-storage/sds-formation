@@ -1,0 +1,56 @@
+{
+    "Description" : "this template will create a boot node.",
+    "Parameters" : {
+        "ClusterURL": {
+            "Type" : "String",
+            "Value" : "http://10.0.0.1:8056/v1"
+        },
+        "Network" : {
+            "Type" : "String",
+            "Value": "10.0.0.1/24"
+        },
+        "UserName" : {
+            "Type" : "String",
+            "Value" : "admin"
+        },
+        "UserEmail" : {
+            "Type" : "String",
+            "Value" : "admin@xsky.com"
+        },
+        "UserPassword" : {
+            "Type" : "String",
+            "Value" : "admin"
+        }
+    },
+    "Resources" : [
+        {
+            "Name" : "BootNode",
+            "Type" : "BootNode",
+            "Properties" : {
+                "AdminNetwork" : {"Ref" : "Network"},
+                "PrivateNetwork" : {"Ref" : "Network"},
+                "PublicNetwork" : {"Ref" : "Network"},
+                "GatewayNetwork" : {"Ref" : "Network"},
+                "InstallerPath" : "/opt/sds/installer/sds-release"
+            }
+        },
+        {
+            "Name" : "User",
+            "Type" : "User",
+            "Properties" : {
+                "Name" : {"Ref" : "UserName"},
+                "Email" : {"Ref" : "UserEmail"},
+                "Password" : {"Ref" : "UserPassword"},
+                "Enabled" : true
+            }
+        },
+        {
+            "Name" : "Token",
+            "Type" : "Token",
+            "Properties" : {
+                "Name" : {"Ref" : "UserName"},
+                "Password" : {"Ref" : "UserPassword"}
+            }
+        }
+    ]
+}

@@ -1,0 +1,26 @@
+{
+    "Description" : "this template will create an string list.",
+    "Parameters" : {
+        "ClusterURL": {
+            "Type" : "String",
+            "Value" : "http://10.0.0.1:8056/v1"
+        },
+        "InputStringList": {
+            "Type" : "StringList",
+            "Value" : ["a","b"]
+        }
+    },
+    "Resources" : [
+        {
+            "Name" : "StringList",
+            "Type" : "StringList",
+            "Properties" : {
+                "Attributes" : [
+                    {"Ref": "InputStringList"},
+                    ["c","d"],
+                    "e"
+                ]
+            }
+        }
+    ]
+}

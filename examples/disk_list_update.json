@@ -1,0 +1,35 @@
+{
+    "Description" : "this template will update disk type of disk list.",
+    "Parameters" : {
+        "ClusterURL": {
+            "Type": "String",
+            "Value": "http://10.0.0.1:8056/v1"
+        }
+    },
+    "Resources" : [
+        {
+            "Name" : "Token",
+            "Type" : "Token",
+            "Properties" : {
+                "Name" : "admin",
+                "Password" : "admin"
+            }
+        },
+        {
+            "Name": "DiskList",
+            "Type" : "DiskList",
+            "Properties" : {
+                "Used" : false,
+                "DiskType" : "HDD"
+            }
+        },
+        {
+            "Name": "DiskList",
+            "Type": "DiskList",
+            "Action": "Update",
+            "Properties": {
+                "DiskType": "SSD"
+            }
+        }
+    ]
+}

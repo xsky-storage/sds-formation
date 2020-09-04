@@ -1,0 +1,71 @@
+{
+    "Description" : "this template will create an access path with given iqn.",
+    "Parameters" : {
+        "ClusterURL": {
+            "Type" : "String",
+            "Value" : "http://10.0.0.1:8056/v1"
+        },
+        "HostIDs" : {
+            "Type" : "IntegerList",
+            "Value" : [1]
+        }
+    },
+    "Resources" : [
+        {
+            "Name": "Token",
+            "Type" : "Token",
+            "Properties" : {
+                "Name" : "admin",
+                "Password" : "admin"
+            }
+        },
+        {
+            "Name" : "ClientGroup1",
+            "Type" : "ClientGroup",
+            "Properties" : {
+                "Clients" : [
+                    {"Code" : "iqn.2017-01.com.xsky.iscsi:name1"},
+                    {"Code" : "iqn.2017-01.com.xsky.iscsi:name2"}
+                ],
+                "Name" : "client_group1",
+                "Type" : "iSCSI"
+            }
+        },
+        {
+            "Name" : "ClientGroup2",
+            "Type" : "ClientGroup",
+            "Properties" : {
+                "Clients" : [
+                    {"Code" : "iqn.2017-01.com.xsky.iscsi:name3"}
+                ],
+                "Name" : "client_group2",
+                "Type" : "iSCSI"
+            }
+        },
+        {
+            "Name" : "AccessPath1",
+            "Type" : "AccessPath",
+            "Properties" : {
+                "Chap" : false,
+                "HostIDs" : {"Ref": "HostIDs"},
+                "MappingGroups" : [
+                    {
+                        "BlockVolumeIDs" : [1,2],
+                        "ClientGroupID" : {"Ref": "ClientGroup1"}
+                    }
+                ],
+                "Name" : "access_path1",
+                "Type" : "iSCSI"
+            }
+        },
+        {
+            "Name" : "MappingGroup1",
+            "Type" : "MappingGroup",
+            "Properties" : {
+                "AccessPathID" : {"Ref": "AccessPath1"},
+                "BlockVolumeIDs" : [3],
+                "ClientGroupID" : {"Ref": "ClientGroup2"}
+            }
+        }
+    ]
+}

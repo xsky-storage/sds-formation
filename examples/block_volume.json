@@ -1,0 +1,36 @@
+{
+    "Description" : "this template will create a block volume.",
+    "Parameters" : {
+        "ClusterURL": {
+            "Type" : "String",
+            "Value" : "http://10.0.0.1:8056/v1"
+        }
+    },
+    "Resources" : [
+        {
+            "Name" : "Token",
+            "Type" : "Token",
+            "Properties" : {
+                "Name" : "admin",
+                "Password" : "admin"
+            }
+        },
+        {
+            "Name" : "BlockVolume",
+            "Type" : "BlockVolume",
+            "Properties" : {
+                "Name" : "volume3",
+                "Format" : 129,
+                "PerformancePriority": 1,
+                "PoolID" : 1,
+                "Size" : 1024000,
+                "Qos" : {
+                    "BurstTotalBw" : 4096000,
+                    "BurstTotalIops" : 4096,
+                    "MaxTotalBw" : 1024000,
+                    "MaxTotalIops" : 1024
+                }
+            }
+        }
+    ]
+}

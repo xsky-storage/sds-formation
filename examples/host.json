@@ -1,0 +1,30 @@
+{
+    "Description" : "this template will create a host with given admin IP.",
+    "Parameters" : {
+        "ClusterURL" : {
+            "Type" : "String",
+            "Value" : "http://10.0.0.1:8056/v1"
+        },
+        "AdminIP" : {
+            "Type" : "String",
+            "Value" : "10.0.0.2"
+        }
+    },
+    "Resources" : [
+        {
+            "Name": "Token",
+            "Type" : "Token",
+            "Properties" : {
+                "Name" : "admin",
+                "Password" : "admin"
+            }
+        },
+        {
+            "Name" : "Host",
+            "Type" : "Host",
+            "Properties" : {
+                "AdminIP" : {"Ref": "AdminIP"}
+            }
+        }
+    ]
+}

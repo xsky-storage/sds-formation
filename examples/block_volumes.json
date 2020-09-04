@@ -1,0 +1,42 @@
+{
+    "Description" : "this template will create a volume template.",
+    "Parameters" : {
+        "ClusterURL": {
+            "Type" : "String",
+            "Value" : "http://10.0.0.1:8056/v1"
+        }
+    },
+    "Resources" : [
+        {
+            "Name" : "Token",
+            "Type" : "Token",
+            "Properties" : {
+                "Name" : "admin",
+                "Password" : "admin"
+            }
+        },
+        {
+            "Name" : "BlockVolumes1",
+            "Type" : "BlockVolumes",
+            "Properties" : {
+                "Names" : ["v1", "v2"],
+                "Format" : 129,
+                "PerformancePriority": 1,
+                "PoolID" : 1,
+                "Size" : 1024000
+            }
+        },
+        {
+            "Name" : "BlockVolumes2",
+            "Type" : "BlockVolumes",
+            "Properties" : {
+                "Prefix" : "volume",
+                "Num" : 3,
+                "Format" : 129,
+                "PerformancePriority": 1,
+                "PoolID" : 1,
+                "Size" : 1024000
+            }
+        }
+    ]
+}

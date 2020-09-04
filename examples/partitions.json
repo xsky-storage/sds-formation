@@ -1,0 +1,31 @@
+{
+    "Description" : "this template will create partititions.",
+    "Parameters" : {
+        "ClusterURL" : {
+            "Type" : "String",
+            "Value" : "http://10.0.0.1:8056/v1"
+        },
+        "DiskIDs" : {
+            "Type" : "IntegerList",
+            "Value" : [1]
+        }
+    },
+    "Resources" : [
+         {
+            "Name" : "Token",
+            "Type" : "Token",
+            "Properties" : {
+                "Name" : "admin",
+                "Password" : "admin"
+            }
+        },
+        {
+            "Name" : "Partitions",
+            "Type" : "Partitions",
+            "Properties" : {
+                "DiskIDs" : {"Ref": "DiskIDs"},
+                "NumPerDisk" : 2
+            }
+        }
+    ]
+}

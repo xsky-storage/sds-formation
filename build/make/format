@@ -1,0 +1,10 @@
+#!/bin/bash
+
+fmt() {
+	echo "go fmt $1"
+	gofmt -l -w $1
+}
+
+for d in ${SRC_DIRS[@]}; do
+	fmt $d
+done

@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+go version
+go env
+
+function build_binary () {
+    local pkg=$1
+    local cmd_name=$2
+    local binary_name="${cmd_name}-${VERSION}"
+    local output=${DEST}/${binary_name}
+    echo "Building: ${output} with ${BUILDFLAGS[@]} -ldflags ${LDFLAGS}"
+    go build \
+        -o ${output} \
+        "${BUILDFLAGS[@]}" \
+        -ldflags "$LDFLAGS" \
+        ${pkg}
+    ln -sf ${binary_name} "${DEST}/${cmd_name}"
+    hash_files ${output}
+    echo "Created binary: ${output}"
+}
+
+build_binary xsky.com/sds-formation/cmd sds-formation

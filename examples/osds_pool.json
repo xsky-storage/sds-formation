@@ -1,0 +1,78 @@
+{
+    "Description" : "this template will create two pools. One pool uses all unused SSD disks in the cluster, and another use unused HDD disks. Note that all hosts should be in the same protection domain in this scenario",
+    "Parameters" : {
+        "ClusterURL" : {
+            "Type" : "String",
+            "Value" : "http://10.0.0.1:8056/v1"
+        }
+    },
+    "Resources" : [
+        {
+            "Name": "Token",
+            "Type" : "Token",
+            "Properties" : {
+                "Name" : "admin",
+                "Password" : "admin"
+            }
+        },
+        {
+            "Name" : "SSDDiskList",
+            "Type" : "DiskList",
+            "Properties" : {
+                "Used" : false,
+                "DiskType" : "SSD"
+            }
+        },
+        {
+            "Name" : "HDDDiskList",
+            "Type" : "DiskList",
+            "Properties" : {
+                "Used" : false,
+                "DiskType" : "HDD",
+                "Num": 1
+            }
+        },
+        {
+            "Name" : "SSDOsds",
+            "Type" : "Osds",
+            "Properties" : {
+                "DiskIDs" : {"Ref" : "SSDDiskList"},
+                "Role": "index"
+            }
+        },
+        {
+            "Name" : "HDDOsds",
+            "Type" : "Osds",
+            "Properties" : {
+                "DiskIDs" : {"Ref" : "HDDDiskList"}
+            }
+        },
+        {
+            "Name" : "SSDPool",
+            "Type" : "Pool",
+            "WaitInterval" : 60,
+            "CheckInterval" : 5,
+            "Properties" : {
+                "Name" : "SSDPool",
+                "ProtectionDomainID" : 1,
+                "PoolType" : "replicated",
+                "OsdIDs" : {"Ref" : "SSDOsds"},
+                "PoolRole": "index",
+                "Size" : 1
+            }
+        },
+        {
+            "Name" : "HDDPool",
+            "Type" : "Pool",
+            "WaitInterval" : 60,
+            "CheckInterval" : 5,
+            "Properties" : {
+                "Name" : "HDDPool",
+                "ProtectionDomainID" : 1,
+                "PoolType" : "replicated",
+                "OsdIDs" : {"Ref" : "HDDOsds"},
+                "Size" : 1
+            }
+        }
+    ]
+}

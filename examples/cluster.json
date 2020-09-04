@@ -1,0 +1,67 @@
+{
+    "Description": "this template will create an cluster. It includes add new hosts with given admin IPs, creating a protection domain with those hosts, scanning unused disks with type HDD on those storage servers, and using those disk to create a pool with a volume",
+    "Parameters" : {
+        "ClusterURL" : {
+            "Type" : "String",
+            "Value" : "http://10.0.0.1:8056/v1"
+        },
+        "AdminIPs" : {
+            "Type" : "StringList",
+            "Value": ["10.0.0.2"]
+        }
+    },
+    "Resources" : [
+        {
+            "Name": "Token",
+            "Type" : "Token",
+            "Properties" : {
+                "Name" : "admin",
+                "Password" : "admin"
+            }
+        },
+        {
+            "Name" : "NewHosts",
+            "Type" : "Hosts",
+            "Properties" : {
+                "AdminIPs" : {"Ref": "AdminIPs"}
+            }
+        },
+        {
+            "Name" : "StorageServers",
+            "Type" : "IntegerList",
+            "Properties" : {
+                "Attributes" : [
+                    {"Ref": "NewHosts"},
+                    1
+                ]
+            }
+        },
+        {
+            "Name" : "HDDDisks",
+            "Type" : "DiskList",
+            "Properties" : {
+                "Used" : false,
+                "DiskType" : "HDD",
+                "HostIDs" : {"Ref": "StorageServers"}
+            }
+        },
+        {
+            "Name" : "HDDOsds",
+            "Type" : "Osds",
+            "Properties" : {
+                "DiskIDs" : {"Ref": "HDDDisks"}
+            }
+        },
+        {
+            "Name" : "HDDReplicatedPool",
+            "Type" : "Pool",
+            "Properties" : {
+                "Name" : "replicated_pool",
+                "PoolType" : "replicated",
+                "ProtectionDomainID" : 1,
+                "Size" : 1,
+                "OsdIDs" : {"Ref": "HDDOsds"}
+            }
+        }
+    ]
+}

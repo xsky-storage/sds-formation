@@ -1,0 +1,71 @@
+#!/bin/bash
+set -e
+
+RED=$'\033[31m'
+GREEN=$'\033[32m'
+TEXTRESET=$'\033[0m' # reset the foreground colour
+
+# Run formation's test suite, including sub-packages, and store their output as a bundle
+# If $TESTFLAGS is set in the environment, it is passed as extra arguments to 'go test'.
+# You can use this to select certain tests to run, eg.
+#
+#   TESTFLAGS='-test.run ^TestBuild$' ./build/make.sh test-unit
+#
+function bundle_test_unit () {
+    TESTDIRS=(`find_dirs "*_test.go" | sed 's,^\./,,g'`)
+    echo "TESTDIRS: ${TESTDIRS[@]}"
+
+    TESTS_FAILED=()
+    for dir in ${TESTDIRS[@]}; do
+        echo
+        local outfile="${dir//\//.}.test"
+        local precompiled="./${DEST}/precompiled/${outfile}"
+        local testcover=()
+        if [[ ${HAVE_GO_TEST_COVER} ]]; then
+            mkdir -p ${ABS_DEST}/coverprofiles
+            local coverprofile="${ABS_DEST}/coverprofiles/${outfile}.cover"
+            testcover=( "-cover" "-coverprofile" "${coverprofile}" )
+        fi
+
+        echo "Testing: go test ${PKGNAME}/${dir} ${testcover[@]} ${TESTFLAGS}"
+        if ! ( XMS_CONF=${conf} go test ${PKGNAME}/${dir} ${testcover[@]} ${TESTFLAGS} ); then
+            TESTS_FAILED+=("$dir")
+            echo
+            echo "${RED}Tests failed: $dir${TEXTRESET}"
+            sleep 1 # give it a second, so observers watching can take note
+        fi
+    done
+    echo
+
+    # if some tests fail, we want the bundlescript to fail, but we want to
+    # try running ALL the tests first, hence TESTS_FAILED
+    if [ "${#TESTS_FAILED[@]}" -gt 0 ]; then
+        echo "${RED}Test failures in: ${TESTS_FAILED[@]}${TEXTRESET}"
+        false
+    else
+        echo "${GREEN}Test success${TEXTRESET}"
+        true
+    fi
+}
+
+PARALLEL=${PARALLEL:=false}
+PARALLEL_STEP=${PARALLEL_STEP:=6}
+GROUP_PREFIX=${GROUP_PREFIX:='_T'}
+TEST_TIMEOUT=${TEST_TIMEOUT:=60}
+PARALLEL_THRESHOLD=${PARALLEL_THRESHOLD:=6}
+
+function calc_parallel_step () {
+    case_num=${1}
+    let step=${case_num}/${PARALLEL_THRESHOLD}
+    if [[ $(( ${case_num}%${PARALLEL_THRESHOLD} )) -ne 0 ]]; then
+        step=$(( step + 1 ))
+    fi
+    if [[ ${step} -gt ${PARALLEL_STEP} ]]; then
+        step=${PARALLEL_STEP}
+    fi
+    echo ${step}
+}
+
+go version
+go env
+bundle_test_unit 2>&1 | tee -a "$DEST/test.log"

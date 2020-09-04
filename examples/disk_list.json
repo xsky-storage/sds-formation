@@ -1,0 +1,46 @@
+{
+    "Description" : "this template will create disk list with given admin IP.",
+    "Parameters" : {
+        "ClusterURL": {
+            "Type": "String",
+            "Value": "http://10.0.0.1:8056/v1"
+        },
+        "StorageServers": {
+            "Type": "IntegerList",
+            "Value": [1]
+        }
+    },
+    "Resources" : [
+        {
+            "Name" : "Token",
+            "Type" : "Token",
+            "Properties" : {
+                "Name" : "admin",
+                "Password" : "admin"
+            }
+        },
+        {
+            "Name": "DiskList",
+            "Type" : "DiskList",
+            "Properties" : {
+                "Used" : true,
+                "Device" : "sdb",
+                "DiskType" : "HDD",
+                "MinSizeGB" : 200,
+                "MaxSizeGB" : 300,
+                "Model" : "SEAGATE",
+                "HostIDs" : {"Ref": "StorageServers"}
+            }
+        },
+        {
+            "Name": "DiskList2",
+            "Type": "DiskList",
+            "Properties": {
+                "Used": false,
+                "DiskType": "SSD",
+                "Num": 2,
+                "HostIDs": {"Ref": "StorageServers"}
+            }
+        }
+    ]
+}

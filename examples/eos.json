@@ -1,0 +1,119 @@
+{
+    "Description" : "this template will create a EOS environment.",
+    "Parameters" : {
+        "ClusterURL": {
+            "Type" : "String",
+            "Value" : "http://10.0.0.1:8056/v1"
+        },
+        "SDDPool" : {
+            "Type" : "Integer",
+            "Value" : 3
+        },
+        "HDDPool" : {
+            "Type" : "Integer",
+            "Value" : 2
+        },
+        "Host" : {
+            "Type" : "Integer",
+            "Value" : 1
+        }
+    },
+    "Resources" : [
+         {
+            "Name": "Token",
+            "Type" : "Token",
+            "Properties" : {
+                "Name" : "admin",
+                "Password" : "admin"
+            }
+        },
+        {
+            "Name" : "ObjectStorage",
+            "Type" : "ObjectStorage",
+            "Properties" : {
+                "PoolID" : {"Ref" : "SDDPool"},
+                "ArchivePoolID": {"Ref": "HDDPool"}
+            }
+        },
+        {
+            "Name" : "ObjectStorageUser",
+            "Type" : "ObjectStorageUser",
+            "Properties" : {
+                "Name" : "user1",
+                "Email" : "user1@xsky.com",
+                "BucketQuotaMaxObjects" : 500,
+                "BucketQuotaMaxSize" : 1024000,
+                "UserQuotaMaxObjects" : 5000,
+                "UserQuotaMaxSize" : 10240000,
+                "Keys" : [
+                    {
+                        "AccessKey" : "5X8G67IR69DSAKF1ROC5",
+                        "SecretKey" : "8bfKxvSzpxla2XUoQCmN5482znwxvY0k8pX1V2Nl"
+                    }
+                ]
+            }
+        },
+        {
+            "Name" : "ObjectStoragePolicy",
+            "Type" : "ObjectStoragePolicy",
+            "Properties" : {
+                "Name": "policy1",
+                "Compress": false,
+                "Crypto": false,
+                "DataSmallPoolID": {"Ref": "SDDPool"},
+                "DataSmallPoolIDs": [
+                    {"Ref": "SDDPool"}
+                ],
+                "DataBigPoolID": {"Ref": "SDDPool"},
+                "DataBigPoolIDs": [
+                    {"Ref": "SDDPool"}
+                ],
+                "IndexPoolID": {"Ref": "SDDPool"}
+            }
+        },
+        {
+            "Name" : "ObjectStorageBucket",
+            "Type" : "ObjectStorageBucket",
+            "Properties" : {
+                "Name" : "bucket1",
+                "AllUserPermission" : "read",
+                "OwnerID" : {"Ref": "ObjectStorageUser"},
+                "PolicyID" : {"Ref": "ObjectStoragePolicy"},
+                "QuotaMaxObjects" : 2000,
+                "QuotaMaxSize" : 2048000
+            }
+        },
+        {
+            "Name" : "ObjectStorageGateway",
+            "Type" : "ObjectStorageGateway",
+            "Properties" : {
+                "HostID" : {"Ref": "Host"},
+                "Name" : "s3_gateway",
+                "Port" : "7480"
+            }
+         },
+         {
+            "Name" : "NFSGateway",
+            "Type" : "NFSGateway",
+            "Properties" : {
+                "HostID" : {"Ref": "Host"},
+                "Name" : "nfs_gateway",
+                "Port" : "8480"
+            }
+        },
+        {
+            "Name": "S3LoadBalancerGroup",
+            "Type": "S3LoadBalancerGroup",
+            "Properties": {
+                "Name": "s3lbg1",
+                "Port": 7481,
+                "S3LoadBalancers": [
+                    {
+                        "HostID": {"Ref": "Host"},
+                        "VIP": "172.16.31.199"
+                    }
+                ]
+            }
+        }
+    ]
+}

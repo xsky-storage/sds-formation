@@ -1,0 +1,31 @@
+#!/bin/bash
+
+IFS=$'\n'
+unset IFS
+
+badFiles=()
+
+check_fmt() {
+	if [ "$(gofmt -d -l $1)" ]; then
+		badFiles+=( "$1" )
+	fi
+}
+
+for f in "${SRC_DIRS[@]}"; do
+	check_fmt $f
+done
+
+if [ ${#badFiles[@]} -eq 0 ]; then
+	echo 'Congratulations!  All Go source files are properly formatted.'
+else
+	{
+		echo "These files are not properly gofmt'd:"
+		for f in "${badFiles[@]}"; do
+			echo " - $f"
+		done
+		echo
+		echo 'Please reformat the above files using "gofmt -s -w" and commit the result.'
+		echo
+	} >&2
+	false
+fi

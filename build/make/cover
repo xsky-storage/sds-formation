@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+bundle_cover() {
+    echo ${DEST}
+    coverprofiles=$(find ${DEST}/../ -iname "*.cover" -print)
+    echo ${coverprofiles}
+	for p in ${coverprofiles}; do
+        if [[ -n ${p} ]]; then
+            echo "Cover report: go tool cover -func=${p}"
+            (
+            go tool cover -func="$p"
+            )
+        fi
+	done
+}
+
+if [ "$HAVE_GO_TEST_COVER" ]; then
+	bundle_cover 2>&1 | tee "$DEST/report.log"
+else
+	echo >&2 'warning: the current version of go does not support -cover'
+	echo >&2 '  skipping test coverage report'
+fi
